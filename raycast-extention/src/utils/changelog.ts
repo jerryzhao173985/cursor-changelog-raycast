@@ -6,6 +6,7 @@ import FirecrawlApp from "@mendable/firecrawl-js";
 interface ChangelogEntry {
   version: string;
   description: string;
+  detailLink?: string;
 }
 
 const DATA_DIR = join(homedir(), ".cursor-changelog");
@@ -58,9 +59,19 @@ const cleanDescription = (desc: string): string => {
   return desc.trim();
 };
 
+// Extract detail link from a section if present
+const extractDetailLink = (content: string): string | undefined => {
+  // Look for ## [Title](link) pattern commonly used in the changelog
+  const linkMatch = content.match(/##\s*\[([^\]]+)\]\(([^)]+)\)/);
+  if (linkMatch && linkMatch[2]) {
+    return linkMatch[2];
+  }
+  return undefined;
+};
+
 // Find individual patch descriptions from formatted lines
-const extractIndividualPatches = (content: string): Record<string, string> => {
-  const patches: Record<string, string> = {};
+const extractIndividualPatches = (content: string): Record<string, { description: string; detailLink?: string }> => {
+  const patches: Record<string, { description: string; detailLink?: string }> = {};
   
   // Pattern to match version numbers followed by descriptions
   const pattern = /(\d+\.\d+\.\d+)\s*:?\s*-?\s*([^-:0-9][^0-9]*?)(?=\s*-\s*\d+\.\d+\.\d+|\n|$)/g;
@@ -77,7 +88,7 @@ const extractIndividualPatches = (content: string): Record<string, string> => {
     
     const cleanDesc = cleanDescription(desc);
     if (cleanDesc && cleanDesc.length > 10) {  // Ensure meaningful description
-      patches[version] = cleanDesc;
+      patches[version] = { description: cleanDesc };
     }
   }
   
@@ -85,19 +96,28 @@ const extractIndividualPatches = (content: string): Record<string, string> => {
 };
 
 // Consolidate versions with identical descriptions into version ranges
-const consolidateVersions = (patchesDict: Record<string, string>): ChangelogEntry[] => {
-  // Invert the dictionary: group versions by description
-  const groupedByDesc: Record<string, string[]> = {};
-  for (const [version, desc] of Object.entries(patchesDict)) {
-    if (!groupedByDesc[desc]) {
-      groupedByDesc[desc] = [];
+const consolidateVersions = (patchesDict: Record<string, { description: string; detailLink?: string }>): ChangelogEntry[] => {
+  // Group by description
+  const grouped: Record<string, { versions: string[]; detailLink?: string }> = {};
+  
+  for (const [version, data] of Object.entries(patchesDict)) {
+    const { description, detailLink } = data;
+    
+    if (!grouped[description]) {
+      grouped[description] = { versions: [], detailLink };
     }
-    groupedByDesc[desc].push(version);
+    
+    grouped[description].versions.push(version);
+    
+    // Prefer links from major versions if available
+    if (!grouped[description].detailLink && detailLink) {
+      grouped[description].detailLink = detailLink;
+    }
   }
   
   const consolidated: ChangelogEntry[] = [];
   
-  for (const [desc, versions] of Object.entries(groupedByDesc)) {
+  for (const [desc, data] of Object.entries(grouped)) {
     // Skip entries without meaningful descriptions
     if (!desc || desc.length < 10) {
       continue;
@@ -105,7 +125,7 @@ const consolidateVersions = (patchesDict: Record<string, string>): ChangelogEntr
     
     // Sort versions to find consecutive ranges
     // Only consider 0.xx.yy versions (not 1.xx which are likely false positives)
-    const validVersions = versions.filter(v => v.startsWith("0."));
+    const validVersions = data.versions.filter(v => v.startsWith("0."));
     
     if (validVersions.length === 0) {
       continue;
@@ -155,10 +175,18 @@ const consolidateVersions = (patchesDict: Record<string, string>): ChangelogEntr
     // Convert ranges to version strings
     for (const rangeGroup of ranges) {
       if (rangeGroup.length === 1) {
-        consolidated.push({ version: rangeGroup[0], description: desc });
+        consolidated.push({ 
+          version: rangeGroup[0], 
+          description: desc,
+          detailLink: data.detailLink
+        });
       } else {
         const rangeStr = `${rangeGroup[0]}-${rangeGroup[rangeGroup.length - 1]}`;
-        consolidated.push({ version: rangeStr, description: desc });
+        consolidated.push({ 
+          version: rangeStr, 
+          description: desc,
+          detailLink: data.detailLink
+        });
       }
     }
   }
@@ -220,11 +248,54 @@ export const updateChangelog = async (apiKey: string): Promise<ChangelogEntry[]>
     }
     
     console.log("Processing content...");
-    const allPatches: Record<string, string> = {};
+    const allPatches: Record<string, { description: string; detailLink?: string }> = {};
     
-    // Extract from lines like "0.47.1: Description - 0.47.2: Another description"
+    // Extract major version sections and their links
+    const majorVersionSections = markdownContent.match(/(?:^|\n)(\d+\.\d+\.x)[\s\S]*?(?=\n\d+\.\d+\.x|\n\d{3,4}|\Z)/g) || [];
+    
+    for (const section of majorVersionSections) {
+      const versionMatch = section.match(/(\d+\.\d+\.x)/);
+      if (versionMatch && versionMatch[1]) {
+        const version = versionMatch[1];
+        const detailLink = extractDetailLink(section);
+        
+        // Extract description
+        const descMatch = section.match(/##\s*\[[^\]]+\]\([^)]+\)\s*\n\n([\s\S]*?)(?=\n\n|$)/);
+        if (descMatch && descMatch[1]) {
+          const desc = cleanDescription(descMatch[1]);
+          if (desc && desc.length > 10) {
+            allPatches[version] = {
+              description: desc,
+              detailLink
+            };
+          }
+        }
+        
+        // Also look for patch versions in this section
+        const sectionPatches = extractIndividualPatches(section);
+        for (const [patchVersion, patchData] of Object.entries(sectionPatches)) {
+          // For patches, we'll associate the major version's link
+          if (!allPatches[patchVersion]) {
+            allPatches[patchVersion] = patchData;
+            if (detailLink && !patchData.detailLink) {
+              allPatches[patchVersion].detailLink = detailLink;
+            }
+          }
+        }
+      }
+    }
+    
+    // Extract individual patch descriptions from the entire content
     const individualPatches = extractIndividualPatches(markdownContent);
-    Object.assign(allPatches, individualPatches);
+    
+    // Merge with allPatches, preserving detail links if they exist
+    for (const [version, data] of Object.entries(individualPatches)) {
+      if (!allPatches[version]) {
+        allPatches[version] = data;
+      } else if (!allPatches[version].detailLink && data.detailLink) {
+        allPatches[version].detailLink = data.detailLink;
+      }
+    }
     
     // Look for specific version patterns at the start of lines
     const patchPattern = /(?:^|\n)(\d+\.\d+\.\d+)\s*:?\s*-?\s*([^-:0-9][^0-9\n]*?)(?=\n|$)/g;
@@ -241,8 +312,12 @@ export const updateChangelog = async (apiKey: string): Promise<ChangelogEntry[]>
       const cleanDesc = cleanDescription(desc);
       if (cleanDesc && cleanDesc.length > 10) {
         // Prefer longer descriptions if we already have one
-        if (!allPatches[version] || cleanDesc.length > allPatches[version].length) {
-          allPatches[version] = cleanDesc;
+        if (!allPatches[version] || cleanDesc.length > allPatches[version].description.length) {
+          const existingLink = allPatches[version]?.detailLink;
+          allPatches[version] = { 
+            description: cleanDesc,
+            detailLink: existingLink
+          };
         }
       }
     }
@@ -256,34 +331,20 @@ export const updateChangelog = async (apiKey: string): Promise<ChangelogEntry[]>
       // Extract individual patches
       const sectionPatches = extractIndividualPatches(patchesSection);
       
-      for (const [version, desc] of Object.entries(sectionPatches)) {
-        if (!allPatches[version] || desc.length > allPatches[version].length) {
-          allPatches[version] = desc;
+      for (const [version, data] of Object.entries(sectionPatches)) {
+        if (!allPatches[version] || data.description.length > allPatches[version].description.length) {
+          const existingLink = allPatches[version]?.detailLink;
+          allPatches[version] = {
+            description: data.description,
+            detailLink: existingLink || data.detailLink
+          };
         }
-      }
-    }
-    
-    // Handle major version headers like "0.48.x"
-    const majorVersionPattern = /(?:^|\n)(\d+\.\d+\.x)[\n\s]+(.*?)(?=\n\n|\n\d+\.\d+\.|\Z)/gs;
-    let majorMatch;
-    
-    while ((majorMatch = majorVersionPattern.exec(markdownContent)) !== null) {
-      const [, version, fullDesc] = majorMatch;
-      
-      // Skip if not starting with 0.
-      if (!version.startsWith("0.")) {
-        continue;
-      }
-      
-      const desc = cleanDescription(fullDesc);
-      if (desc && !allPatches[version]) {
-        allPatches[version] = desc;
       }
     }
     
     // Remove entries with invalid descriptions
     for (const version of Object.keys(allPatches)) {
-      const desc = allPatches[version];
+      const desc = allPatches[version].description;
       // Check for descriptions that are just markdown syntax or brackets or too short
       if (["](", "]", ")", "](http", ":", ""].includes(desc) || desc.length < 10) {
         delete allPatches[version];

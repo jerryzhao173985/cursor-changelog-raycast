@@ -17,7 +17,7 @@ interface Preferences {
 
 export default function GetLatest() {
   const [isLoading, setIsLoading] = useState(true);
-  const [latestVersion, setLatestVersion] = useState<{ version: string; description: string } | null>(null);
+  const [latestVersion, setLatestVersion] = useState<{ version: string; description: string; detailLink?: string } | null>(null);
   const [needsUpdate, setNeedsUpdate] = useState(false);
   
   const preferences = getPreferenceValues<Preferences>();
@@ -89,6 +89,7 @@ export default function GetLatest() {
 
 ${latestVersion.description}
 
+${latestVersion.detailLink ? `\n[View Full Details](${latestVersion.detailLink})\n` : ''}
 ---
 
 *Last updated: ${new Date().toLocaleString()}*
@@ -131,6 +132,13 @@ Please try the "Refresh" action or check your internet connection.
               target="https://cursor.com/changelog"
               text="View Online"
             />
+            {latestVersion.detailLink && (
+              <Detail.Metadata.Link
+                title="Detailed Release Notes"
+                target={latestVersion.detailLink}
+                text="View Details"
+              />
+            )}
           </Detail.Metadata>
         ) : undefined
       }
@@ -161,6 +169,13 @@ Please try the "Refresh" action or check your internet connection.
             url="https://cursor.com"
             shortcut={{ modifiers: ["cmd"], key: "o" }}
           />
+          {latestVersion?.detailLink && (
+            <Action.OpenInBrowser
+              title="Open Detailed Changelog"
+              url={latestVersion.detailLink}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "o" }}
+            />
+          )}
         </ActionPanel>
       }
     />

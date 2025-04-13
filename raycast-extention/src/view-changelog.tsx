@@ -16,7 +16,7 @@ interface Preferences {
 }
 
 export default function ViewChangelog() {
-  const [entries, setEntries] = useState<{ version: string; description: string }[]>([]);
+  const [entries, setEntries] = useState<{ version: string; description: string; detailLink?: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   
@@ -101,7 +101,7 @@ export default function ViewChangelog() {
                 <Action.Push
                   title="View Details"
                   icon={Icon.Eye}
-                  target={<ChangelogDetail version={entry.version} description={entry.description} />}
+                  target={<ChangelogDetail version={entry.version} description={entry.description} detailLink={entry.detailLink} />}
                 />
                 <Action
                   title="Update Changelog"
@@ -118,9 +118,9 @@ export default function ViewChangelog() {
   );
 }
 
-function ChangelogDetail({ version, description }: { version: string; description: string }) {
+function ChangelogDetail({ version, description, detailLink }: { version: string; description: string; detailLink?: string }) {
   // Format the markdown for the Detail view
-  const markdown = `# Cursor ${version}\n\n${description}`;
+  const markdown = `# Cursor ${version}\n\n${description}${detailLink ? `\n\n[View Full Details](${detailLink})` : ''}`;
   
   return (
     <Detail
@@ -137,6 +137,13 @@ function ChangelogDetail({ version, description }: { version: string; descriptio
             content={description}
             shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
           />
+          {detailLink && (
+            <Action.OpenInBrowser
+              title="Open Detailed Changelog"
+              url={detailLink}
+              shortcut={{ modifiers: ["cmd"], key: "o" }}
+            />
+          )}
         </ActionPanel>
       }
     />
