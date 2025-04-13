@@ -1,0 +1,111 @@
+Version,Description
+0.48.8,Improves CPU performance from @-symbols search
+0.48.7,Fixes an issue where some chats could get deleted on update
+0.48.6,Creates a new chat after the AI Pane has been closed for long enough
+0.48.5,Change management for Cmd+Backspace -> Cmd+Shift+Backspace
+0.48.2,Allows users to accept/reject file edited in another chat tab.
+0.48.1,New onboarding
+0.48.x,"Chat tabs, Custom modes & Faster indexing"
+0.47.9,Performance improvements related to memory usage
+0.47.8,UI fix for scrollable model name
+0.47.6,"Faster applies, warns user when edits fails because of cursorignore"
+0.47.4,Fixes an edge case where red diffs stick around in the editor
+0.47.3,Fixes an issue with tool call errors on file edits
+0.47.2,Cursor Tab accepts work with single-line selections
+0.47.1,"Improved performance, added back play button to apply code blocks"
+0.47.x,"Reliability, Keyboard Shortcuts & Early access opt-in"
+0.46.11,"Release track picker (prerelease or standard), fix for dmg installer not working in rare cases"
+0.46.10,"Fix for chat/apply not working with `.github` and other `.` prefixed folders, and small performance fixes."
+0.46.8,"Fix for windows 'rename tools' update error, fix for some users unable to cancel agent terminal commands"
+0.46.7,Improved memory usage and performance
+0.46.6,Improved Windows installation process
+0.46.5,"Resolved issues with extended tool calls, long Composer sessions, and retry functionality"
+0.46.4,"Added support for multiple image attachments and fixed ""User aborted request"" error"
+0.46.3,"Enhanced download reliability, fixed keybinding issue"
+0.46.2,"Improved MCP reliability, added option to disable yolo mode for MCP"
+0.46.x,Agent is ready and UI refresh
+0.45.12-0.45.13,"Update infrastructure improvements. The F1 > ""Check for Updates"" command should now work."
+0.45.1-0.45.11,"Fixes issue with older agent conversations, indexing stability, downloading incorrect extension versions, missing package on windows, crash on opening long composer sessions, latency on pasting code."
+0.45.x,".cursor/rules, Better Codebase Understanding, New Tab Model"
+0.44.1-0.44.11,"Fixes and improvements to dev containers, chat codeblocks on windows, and the agent. Decreases Cursor Tab Latency on Remote SSH. Fixes bug that prematurely triggered the free trial ended popup. Better observability for errors and crashes."
+0.44.x,"Agent Improvements, Yolo Mode, Cursor Tab Update"
+0.43.x,"New Composer UI, Agent, Commit Messages"
+0.42.1-0.42.5,Fixes the following upstream security issue: CVE-2024-43601. Also fixes a few composer bugs and a bug with Cursor Tab. Allows composer to auto apply to files not in its context. Also includes additional mitigations to CVE-2024-48919. Reduces a few long-tail connection errors. Adds escape hatch when Claude predicts the wrong filepath in chat.
+0.42.x,"Composer History, @Lint Errors, VS Code 1.93.1"
+0.41.1-0.41.3,"Improves onboarding UX, fixes a bug with composer cancellation, fixes the Apply button not working on some codeblocks, and fixes a bug where Cursor Tab sees malformed edits."
+0.41.x,"Cursor Tab Python Auto Import, Composer Improvements, Remote SSH to Mac Support"
+0.40.1-0.40.4,"Fixes a bug with apply on remote ssh, a few chat bugs, speeds up Cursor Tab for Europe/Asia users, fixes some outstanding Cursor Tab bugs and notifications hiding the chat input, and includes a fix for Cursor asking for permissions for files in your `~/Library` folder on MacOS (upstream issue: microsoft/vscode#208105)"
+0.40.x,"New Chat UX, Default-On Composer, New Cursor Tab Model"
+0.39.1-0.39.6,"Fixes several Cursor Tab rendering bugs, a bug where the file explorer was not responsive, and a bug where Cursor Tab would hang."
+0.39.x,"Faster Cursor Tab, More Composer improvements"
+0.38.x,"Copilot++ Chunked Streaming (beta), Composer improvements"
+0.37.x,Composer (beta)
+0.36.1-0.36.2,"Fixes #1526, cmd-shift-F on macOS x64 devices. Also fixes official docs taking a long time to show up, and cmd-K stickiness being buggy."
+0.36.x,"Instant Applies, Docs Management"
+0.35.x,"Default-on Cursor Prediction, Remote Tunnels & More Robust SSH"
+0.34.1-0.34.6,"Fixes long context models in the model toggle, an empty AI Review tab, Copilot++ preview bugs, the Mac icon size, and remote ssh fixes."
+0.34.x,"VS Code 1.89, New Cursor Prediction UI, Gemini 1.5 Flash, Copilot++ partial completion"
+0.33.1-0.33.3,"Fix to settings toggles, fix to Copilot++ diffbox performance, onboarding tweaks."
+0.33.x,"Networking Stability, Command-K Autoselect"
+0.32.1-0.32.7,"Fixes a performance issue with the new Copilot++ syntax highlighting, changes AI Notes to be default disabled, changes the naming of the `main` Copilot++ model to `legacy`, fixes Copilot++ being slower over SSH, fixes to the Copilot++ preview box."
+0.32.x,"Improved Copilot++ UX, New GPT-4 Model"
+0.31.1-0.31.3,"Adds back in AI Review (alpha), fixes the ""Cursor Settings"" menu item, and fixes a bug where @web doesn't return a response."
+0.31.x,Long Context Chat Beta
+0.30.x,"Faster Copilot++, Claude"
+0.29.1,"Fixes a bug where the Copilot++ sometimes would not show a suggestion even if one existed, a bug where the hint line would sometimes cover the ghost text, and a bug where AI Notes would not work on Windows."
+0.28.x,VS Code 1.86.2
+0.27.1-0.27.4,"Fixes to Windows build, chat context UI, onboarding."
+0.27.x,"Linter, Interpreter Mode Updates"
+0.25.2,Copilot++ performance improvements
+0.25.x,Command-K Vision Support
+0.24.3-0.24.4,"Adds ability to configure OpenAI base URL, fixes getcursor/cursor#1202."
+0.24.x,"@Web, gpt-4-0125-preview"
+0.23.3-0.23.9,"Fixes to Command-K, changelog auto-opening, editing very long lines with Copilot++, the ""delete index"" button, connection errors being silenced, and proxied authentication."
+0.23.x,"New Model, Apply Button v2"
+0.22.0,Dev Containers
+0.21.0,"Multiple Command-K, Copilot++ UI"
+0.20.1-0.20.2,"We added TLDRs to make it easier to sort through the bugs flagged by the AI review and fixed a bug with ""Diff with Main."""
+0.20.0,"Copilot++, @ previews, AI Review"
+0.19.1,Interpreter Mode Windows Bug
+0.19.0,Copilot++ Improvements
+0.18.2,Lowercase @ Folders Fix
+0.18.0,"Better Context Chat, Faster Copilot++"
+0.17.0,"Image Support, Interpreter Mode Beta, @ Folders"
+0.14.1,Indexing fixes
+0.14.0,"Pro++, Word-wrapping diffs, and more"
+0.12.0,"Indexing, cmd-k in terminal, @git, /edit, bugfixes"
+0.11.0,Inline Chat
+0.10.4,Fixed builtin cursor-python defaults
+0.10.0,"Better Docs Management, Staged Rollouts"
+0.9.5,Hotfix for indexing
+0.9.4,Hotfix Cmd-K unexpectedly outputting backticks
+0.9.3,Hotfix Github Auth
+0.9.2,Hotfix large persisted state
+0.9.0,"Auditable codebase context, VS Code left bar"
+0.8.6,Email in settings
+0.8.5,Advanced Button
+0.8.3,Codebase indexing controls
+0.8.2,"Cmd-k Followups, chat with large files, and more"
+0.7.3,Patch cursor command on Windows
+0.7.0,In-editor chat
+0.5.1,Performance hotfix
+0.5.0,Enterprise subscription support & misc fixes
+0.4.0,"""with codebase"" for all codebases!"
+0.3.1,Jupyter CMD-k Context Building
+0.3.0,SSH and WSL fixes
+0.2.49,Advanced context for codebase-wide chat
+0.2.48,infinite chat loop hotfix
+0.2.47,Patch for WSL/SSH (Search and Extensions)
+0.2.46,Patch for Cmd-k Generates
+0.2.45,ARM Windows Cmd-Shift-F
+0.2.44,"Improvements to many features, Fixes to Python"
+0.2.43,Fix for Cmd+K
+0.2.42,Fix for Cmd+Shift+F (Mac ARM)
+0.2.41,"Hotfix for ""with codebase"""
+0.2.40,Release for Linux
+0.2.39,New inline edits
+0.2.35,Hotfix for Chat
+0.2.33,Azure Support
+0.2.32,Small improvements
+0.2.31,Hotfix for chat focus
+0.2.30,Show the AI documentation

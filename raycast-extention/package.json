@@ -1,0 +1,62 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "cursor-changelog",
+  "title": "Cursor Changelog",
+  "description": "View and update Cursor changelog information",
+  "private": true,
+  "icon": "icon.png",
+  "author": "simochee",
+  "commands": [
+    {
+      "name": "view-changelog",
+      "title": "View Changelog",
+      "description": "View all Cursor changelog entries",
+      "mode": "view"
+    },
+    {
+      "name": "update-changelog",
+      "title": "Update Changelog",
+      "description": "Fetch and update the Cursor changelog database",
+      "mode": "view"
+    },
+    {
+      "name": "get-latest",
+      "title": "Get Latest",
+      "description": "Show the latest Cursor version and changes",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "apiKey",
+      "type": "password",
+      "required": true,
+      "title": "Firecrawl API Key",
+      "description": "API key for the Firecrawl service",
+      "placeholder": "fc-your-api-key"
+    }
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@9.5.0-beta.0+sha256.bd91cddc9b205c94b5bf0380cec8fc8e4b1dde7b8c5191732f3d4e73848e860e",
+  "volta": {
+    "node": "22.3.0"
+  },
+  "scripts": {
+    "dev": "ray develop",
+    "postinstall": "lefthook install"
+  },
+  "dependencies": {
+    "@mendable/firecrawl-js": "^1.0.32",
+    "@raycast/api": "^1.77.3",
+    "@raycast/utils": "^1.16.1",
+    "got": "^14.4.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@tsconfig/node22": "^22.0.0",
+    "@types/got": "^9.6.12",
+    "@types/react": "^18.3.3",
+    "lefthook": "^1.6.18",
+    "sort-package-json": "^2.10.0"
+  }
+}
